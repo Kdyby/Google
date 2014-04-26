@@ -1,0 +1,33 @@
+{
+    "name": "mikulas/nette-google",
+    "type": "library",
+    "description": "Google authentication for Nette ~2.1",
+    "keywords": ["nette", "google", "authentication", "auth", "login"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mikuláš Dítě",
+            "email": "mikulas@dite.pro"
+        },
+        {
+            "name": "Google",
+            "homepage": "https://github.com/google/google-api-php-client/graphs/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "nette/nette": "~2.1",
+        "google/apiclient": "~1.0.4-beta"
+    },
+    "support": {
+        "issues": "https://github.com/mikulas/nette-google/issues"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mikulas\\Google\\": "src/"
+        },
+        "classmap": [
+            "src/Mikulas/Google/exceptions.php"
+        ]
+    }
+}

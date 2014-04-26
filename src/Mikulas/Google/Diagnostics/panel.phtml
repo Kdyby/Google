@@ -1,0 +1,24 @@
+<style>
+	#nette-debug .nette-googleApiPanel,
+	#tracy-debug .nette-googleApiPanel { min-width: 700px; }
+	#nette-debug .nette-googleApiPanel h2,
+	#tracy-debug .nette-googleApiPanel h2 { font-size: 22px; font-weight: bold; }
+	#nette-debug .nette-googleApiPanel table,
+	#tracy-debug .nette-googleApiPanel table { width: 100%; }
+	#nette-debug .nette-googleApiPanel table+table,
+	#tracy-debug .nette-googleApiPanel table+table { margin-top: 2ex; }
+	#nette-debug .nette-googleApiPanel table th,
+	#tracy-debug .nette-googleApiPanel table th { width: 80px; }
+</style>
+
+<h1>Queries: <?php echo $esc(count($this->calls)); ?>, time: <?php echo $esc($totalTime); ?> </h1>
+<div class="nette-inner tracy-inner nette-googleApiPanel">
+	<?php foreach($this->calls as $call): ?>
+		<table>
+			<tr><th colspan="2"><code><?php echo $esc(strtoupper((string) $call->info['method'])); ?> <?php echo $esc((string) $call->url); ?></code></th></tr>
+			<tr><th>Time</th><td><?php echo $esc(number_format($call->time * 1000, 2, '.', ' ')) ?>&nbsp;ms</td></tr>
+			<tr><th>Response</th><td><?php echo $click($call->result ?: $call->exception, TRUE); ?></td></tr>
+			<tr><th>Params</th><td><?php echo $click($call->params, TRUE); ?></td></tr>
+		</table>
+	<?php endforeach; ?>
+</div>
