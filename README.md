@@ -3,6 +3,10 @@ Mikulas/nette-google
 
 This library is heavily inspired by https://github.com/Kdyby/Facebook
 
+License
+-------
+[LICENSE.md](LICENSE.md)
+
 Requirements
 ------------
 
