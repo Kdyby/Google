@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This file is part of the Kdyby (http://www.kdyby.org)
+ *
+ * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
+ *
+ * For the full copyright and license information, please view the file license.md that was distributed with this source code.
+ */
+
 namespace Kdyby\Google\Diagnostics;
 
 use Google_Exception;
@@ -10,6 +18,8 @@ use Nette;
 use Nette\Utils\Html;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
+
+
 
 if (!class_exists('Tracy\Debugger')) {
 	class_alias('Nette\Diagnostics\Debugger', 'Tracy\Debugger');
@@ -26,7 +36,10 @@ if (!class_exists('Tracy\Dumper')) {
 	class_alias('Nette\Diagnostics\Dumper', 'Tracy\Dumper');
 }
 
+
+
 /**
+ * @author Mikulas Dite <rullaf@gmail.com>
  * @author Filip Procházka <filip@prochazka.su>
  *
  * @property callable $begin

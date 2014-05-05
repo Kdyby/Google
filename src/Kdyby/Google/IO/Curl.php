@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This file is part of the Kdyby (http://www.kdyby.org)
+ *
+ * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
+ *
+ * For the full copyright and license information, please view the file license.md that was distributed with this source code.
+ */
+
 namespace Kdyby\Google\IO;
 
 use Google_Exception;
@@ -10,7 +18,11 @@ use Nette\MemberAccessException;
 use Nette\ObjectMixin;
 
 
+
 /**
+ * @author Mikulas Dite <rullaf@gmail.com>
+ * @author Filip Procházka <filip@prochazka.su>
+ *
  * @method onRequest()
  * @method onResponse()
  * @method onSuccess()

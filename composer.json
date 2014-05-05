@@ -1,5 +1,5 @@
 {
-    "name": "mikulas/nette-google",
+    "name": "kdyby/google-auth",
     "type": "library",
     "description": "Google authentication for Nette ~2.1",
     "keywords": ["nette", "google", "authentication", "auth", "login"],
@@ -17,17 +17,17 @@
     "require": {
         "php": ">=5.4",
         "nette/nette": "~2.1",
-        "google/apiclient": "~1.0.4-beta"
+        "google/apiclient": "~1.0.4@beta"
     },
     "support": {
         "issues": "https://github.com/mikulas/nette-google/issues"
     },
     "autoload": {
         "psr-0": {
-            "Mikulas\\Google\\": "src/"
+            "Kdyby\\Google\\": "src/"
         },
         "classmap": [
-            "src/Mikulas/Google/exceptions.php"
+            "src/Kdyby/Google/exceptions.php"
         ]
     }
 }
