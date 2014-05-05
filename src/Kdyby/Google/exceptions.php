@@ -20,3 +20,13 @@ interface Exception
 {
 
 }
+
+
+
+/**
+ * @author Filip Procházka <email@filip-prochazka.com>
+ */
+class InvalidArgumentException extends \InvalidArgumentException implements Exception
+{
+
+}

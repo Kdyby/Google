@@ -23,6 +23,7 @@ use Nette\Diagnostics\Debugger;
  * @property string $state A CSRF state variable to assist in the defense against CSRF attacks.
  * @property string $code
  * @property string $access_token
+ * @property string $verified_id_token
  * @property string $user_id
  */
 class SessionStorage extends Nette\Object
