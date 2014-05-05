@@ -24,4 +24,4 @@ $ composer require kdyby/google:@dev
 
 -----
 
-Homepage [http://www.kdyby.org](http://www.kdyby.org) and repository [http://github.com/kdyby/Google](http://github.com/kdyby/Google).
+Homepage [http://www.kdyby.org](http://www.kdyby.org) and repository [http://github.com/Kdyby/Google](http://github.com/Kdyby/Google).
