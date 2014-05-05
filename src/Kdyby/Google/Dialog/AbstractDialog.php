@@ -62,6 +62,7 @@ abstract class AbstractDialog extends PresenterComponent
 	{
 		$this->google = $google;
 		$this->config = $google->config;
+		$this->session = $google->getSession();
 		$this->currentUrl = $google->getCurrentUrl();
 
 		$this->monitor('Nette\Application\IPresenter');
@@ -89,62 +90,15 @@ abstract class AbstractDialog extends PresenterComponent
 
 		if ($obj instanceof Nette\Application\IPresenter) {
 			$this->currentUrl = new UrlScript($this->link('//response!'));
-			$this->google->client->setRedirectUri((string) $this->currentUrl);
 		}
 	}
 
 
 
 	/**
-	 * Facebook get's the url for this handle when redirecting to login dialog.
-	 * It automatically calls the onResponse event.
+	 * @return UrlScript
 	 */
-	public function handleResponse()
-	{
-		$this->onResponse($this);
-die;
-		if (!empty($this->config->canvasBaseUrl)) {
-			$this->presenter->redirectUrl($this->config->canvasBaseUrl);
-		}
-
-		$this->presenter->redirect('this');
-	}
-
-
-
-	/**
-	 * @return array
-	 */
-	public function getQueryParams()
-	{
-		$data = array(
-//			'client_id' => $this->facebook->config->appId,
-			'redirect_uri' => (string)$this->currentUrl,
-//			'show_error' => $this->showError
-		);
-
-		if ($this->display !== NULL) {
-			$data['display'] = $this->display;
-		}
-
-		return $data;
-	}
-
-
-
-	/**
-	 * @param string $display
-	 * @param bool $showError
-	 *
-	 * @return string
-	 */
-	public function getUrl()
-	{
-		$url = clone $this->currentUrl;
-		$url->appendQuery($this->getQueryParams());
-
-		return (string) $url;
-	}
+	abstract public function getUrl();
 
 
 
@@ -169,13 +123,14 @@ die;
 
 
 	/**
-	 * @param string $display
-	 * @param bool $showError
-	 * @return Html
+	 * Google get's the url for this handle when redirecting to login dialog.
+	 * It automatically calls the onResponse event.
 	 */
-	public function getControl($display = NULL, $showError = FALSE)
+	public function handleResponse()
 	{
-		return Html::el('a')->href($this->getUrl($display, $showError));
+		$this->google->getUser(); // check the received parameters and save user
+		$this->onResponse($this);
+		$this->presenter->redirect('this');
 	}
 
 }

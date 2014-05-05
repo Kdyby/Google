@@ -22,22 +22,6 @@ class LoginDialog extends AbstractDialog
 {
 
 	/**
-	 * Facebook get's the url for this handle when redirecting to login dialog.
-	 * It automatically calls the onResponse event.
-	 */
-	public function handleResponse()
-	{
-		$this->google->client->authenticate($_GET['code']);
-
-		parent::handleResponse();
-	}
-
-	public function getAccessToken()
-	{
-		return $this->google->client->getAccessToken();
-	}
-
-	/**
 	 * Checks, if there is a user in storage and if not, it redirects to login dialog.
 	 * If the user is already in session storage, it will behave, as if were redirected from Google right now,
 	 * this means, it will directly call onResponse event.
@@ -54,7 +38,18 @@ class LoginDialog extends AbstractDialog
 	 */
 	public function getUrl()
 	{
-		return $this->google->client->createAuthUrl();
+		$client = $this->google->client;
+		/** @var \Google_Auth_OAuth2 $auth */
+		$auth = $client->getAuth();
+
+		// response signal url
+		$client->setRedirectUri((string) $this->currentUrl);
+
+		// CSRF
+		$this->session->establishCSRFTokenState();
+		$auth->setState($this->session->state);
+
+		return new UrlScript($this->google->client->createAuthUrl());
 	}
 
 }
