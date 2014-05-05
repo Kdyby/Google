@@ -10,8 +10,8 @@
 
 namespace Kdyby\Google\Dialog;
 
+use Nette\Http\UrlScript;
 
-use Nette\Http\Url;
 
 
 /**
@@ -39,7 +39,7 @@ class LoginDialog extends AbstractDialog
 
 	/**
 	 * Checks, if there is a user in storage and if not, it redirects to login dialog.
-	 * If the user is already in session storage, it will behave, as if were redirected from facebook right now,
+	 * If the user is already in session storage, it will behave, as if were redirected from Google right now,
 	 * this means, it will directly call onResponse event.
 	 */
 	public function handleOpen()
@@ -47,8 +47,10 @@ class LoginDialog extends AbstractDialog
 		$this->open();
 	}
 
+
+
 	/**
-	 * @return string url
+	 * @return UrlScript
 	 */
 	public function getUrl()
 	{

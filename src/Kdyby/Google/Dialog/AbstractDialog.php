@@ -12,10 +12,10 @@ namespace Kdyby\Google\Dialog;
 
 use Kdyby\Google\Configuration;
 use Kdyby\Google\Google;
-use Nette;
 use Nette\Application\UI\PresenterComponent;
 use Nette\Http\UrlScript;
 use Nette\Utils\Html;
+use Nette;
 
 
 
@@ -33,13 +33,27 @@ abstract class AbstractDialog extends PresenterComponent
 	 */
 	public $onResponse = array();
 
-	/** @var Google */
+	/**
+	 * @var Google
+	 */
 	protected $google;
 
-	/** @var Configuration */
+	/**
+	 * @var Configuration
+	 */
 	protected $config;
 
+	/**
+	 * @var \Kdyby\Google\SessionStorage
+	 */
+	protected $session;
+
+	/**
+	 * @var \Nette\Http\UrlScript
+	 */
 	protected $currentUrl;
+
+
 
 	/**
 	 * @param Google $google
@@ -54,11 +68,17 @@ abstract class AbstractDialog extends PresenterComponent
 		parent::__construct();
 	}
 
-	/** @return Google */
+
+
+	/**
+	 * @return Google
+	 */
 	public function getGoogle()
 	{
 		return $this->google;
 	}
+
+
 
 	/**
 	 * @param \Nette\ComponentModel\Container $obj

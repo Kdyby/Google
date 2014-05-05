@@ -14,9 +14,7 @@ use Google_Client;
 use Google_Exception;
 use Google_Http_Request;
 use Google_IO_Abstract;
-use Kdyby\Google\Dialog\LoginDialog;
 use Nette\Http\Request;
-use Nette\Http\Response;
 use Nette\Http\UrlScript;
 use Nette\Object;
 use Nette\Utils\Json;
@@ -35,31 +33,36 @@ class Google extends Object
 	/** @var Request */
 	protected $httpRequest;
 
-	/** @var Response */
-	protected $httpResponse;
-
-	/** @var Configuration */
+	/**
+	 * @var Configuration
+	 */
 	protected $config;
 
-	/** @var Google_Client */
-	private $client;
+	/**
+	 * @var SessionStorage
+	 */
+	private $session;
 
 	/**
-	 * @param Configuration $config
-	 * @param Google_Client $client
-	 * @param Google_IO_Abstract $io
-	 * @param Request $httpRequest
-	 * @param Response $httpResponse
+	 * @var Google_Client
 	 */
-	public function __construct(Configuration $config, Google_Client $client, Google_IO_Abstract $io, Request $httpRequest, Response $httpResponse)
+	private $client;
+
+
+
+	public function __construct(
+		Configuration $config, Request $httpRequest, SessionStorage $session,
+		Google_Client $client, Google_IO_Abstract $io)
 	{
 		$this->config = $config;
-		$this->httpResponse = $httpResponse;
 		$this->httpRequest = $httpRequest;
-		$this->client = $client;
+		$this->session = $session;
 
+		$this->client = $client;
 		$this->client->setIo($io);
 	}
+
+
 
 	/**
 	 * @internal
@@ -70,8 +73,9 @@ class Google extends Object
 		return $this->httpRequest->url;
 	}
 
+
+
 	/**
-	 * @internal
 	 * @return Google_Client
 	 */
 	public function getClient()
@@ -79,8 +83,37 @@ class Google extends Object
 		return $this->client;
 	}
 
+
+
 	/**
-	 * @return string
+	 * @internal
+	 * @return Configuration
+	 */
+	public function getConfig()
+	{
+		return $this->config;
+	}
+
+
+
+	/**
+	 * @return SessionStorage
+	 */
+	public function getSession()
+	{
+		return $this->session;
+	}
+
+
+
+	/**
+	 * Determines the access token that should be used for API calls.
+	 * The first time this is called, $this->accessToken is set equal
+	 * to either a valid user access token, or it's set to the application
+	 * access token if a valid user access token wasn't available.  Subsequent
+	 * calls return whatever the first call returned.
+	 *
+	 * @return string The access token
 	 */
 	public function getAccessToken()
 	{
@@ -101,18 +134,14 @@ class Google extends Object
 		return $this->client->execute($request);
 	}
 
-	/**
-	 * @internal
-	 * @return Configuration
-	 */
-	public function getConfig()
-	{
-		return $this->config;
-	}
 
+
+	/**
+	 * @return Dialog\LoginDialog
+	 */
 	public function createLoginDialog()
 	{
-		return new LoginDialog($this);
+		return new Dialog\LoginDialog($this);
 	}
 
 }
