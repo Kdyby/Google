@@ -32,16 +32,39 @@ class Curl extends Google_IO_Curl
 {
 
 	/** @var array callable(Google_Http_Request) */
-	public $onRequest = [];
+	public $onRequest = array();
 
 	/** @var array callable(Google_Http_Request) */
-	public $onResponse = [];
+	public $onResponse = array();
 
 	/** @var array callable(Google_Http_Request, float $elapsed) */
-	public $onSuccess = [];
+	public $onSuccess = array();
 
 	/** @var array callable(Google_Http_Request, float $elapsed, Google_Exception) */
-	public $onError = [];
+	public $onError = array();
+
+
+
+	public function makeRequest(Google_Http_Request $request)
+	{
+		$this->onRequest($request);
+		Debugger::timer(__CLASS__);
+
+		try {
+			$res = parent::makeRequest($request);
+			$this->onSuccess($request, Debugger::timer(__CLASS__));
+			$this->onResponse($request);
+
+		} catch (Google_Exception $e) {
+			$this->onError($request, Debugger::timer(__CLASS__), $e);
+			$this->onResponse($request);
+			throw $e;
+		}
+
+		return $res;
+	}
+
+
 
 	/**
 	 * Callbacks
@@ -53,26 +76,6 @@ class Curl extends Google_IO_Curl
 	public function __call($name, $args)
 	{
 		return ObjectMixin::call($this, $name, $args);
-	}
-
-	public function makeRequest(Google_Http_Request $request)
-	{
-		$this->onRequest($request);
-		Debugger::timer(__CLASS__);
-		try
-		{
-			$res = parent::makeRequest($request);
-			$this->onSuccess($request, Debugger::timer(__CLASS__));
-			$this->onResponse($request);
-		}
-		catch (Google_Exception $e)
-		{
-			$this->onError($request, Debugger::timer(__CLASS__), $e);
-			$this->onResponse($request);
-			throw $e;
-		}
-
-		return $res;
 	}
 
 }
