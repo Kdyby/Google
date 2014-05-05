@@ -26,6 +26,9 @@
 		"nette/nette": "~2.1@dev",
 		"google/apiclient": "~1.0.4@beta"
 	},
+	"require-dev": {
+		"nette/tester": "@dev"
+	},
 	"support": {
 		"email": "filip@prochazka.su",
 		"issues": "https://github.com/kdyby/google/issues"

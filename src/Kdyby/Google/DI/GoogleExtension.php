@@ -46,7 +46,7 @@ class GoogleExtension extends CompilerExtension
 		Validators::assert($config['apiKey'], 'string:39', 'API Key');
 		Validators::assert($config['scopes'], 'list', 'Permission scopes');
 
-		$builder->addDefinition($this->prefix('google'))
+		$builder->addDefinition($this->prefix('client'))
 			->setClass('Kdyby\Google\Google');
 
 		$builder->addDefinition($this->prefix('config'))
@@ -58,7 +58,7 @@ class GoogleExtension extends CompilerExtension
 				$config['scopes'],
 			));
 
-		$builder->addDefinition($this->prefix('client'))
+		$builder->addDefinition($this->prefix('apiClient'))
 			->setClass('Google_Client')
 			->addSetup('setClientId', array(
 				new Statement('?->clientId', array($this->prefix('@config')))
@@ -72,7 +72,7 @@ class GoogleExtension extends CompilerExtension
 
 		$curl = $builder->addDefinition($this->prefix('curl'))
 			->setClass('Kdyby\Google\IO\Curl')
-			->addSetup($this->prefix('@client') . '::setIo', array('@self'));
+			->addSetup($this->prefix('@apiClient') . '::setIo', array('@self'));
 
 		$builder->addDefinition($this->prefix('session'))
 			->setClass('Kdyby\Google\SessionStorage');
