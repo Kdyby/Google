@@ -12,10 +12,9 @@ namespace Kdyby\Google\Diagnostics;
 
 use Google_Exception;
 use Google_Http_Request;
-use Kdyby\Google\Google;
 use Kdyby\Google\IO\Curl;
-use Nette;
 use Nette\Utils\Html;
+use Nette;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
@@ -80,7 +79,7 @@ class Panel extends Nette\Object implements IBarPanel
 				' / ' . sprintf('%0.2f', $this->totalTime) . ' s'
 			);
 		}
-		return (string)$tab->add($title);
+		return (string) $tab->add($title);
 	}
 
 
@@ -97,7 +96,9 @@ class Panel extends Nette\Object implements IBarPanel
 		ob_start();
 		$esc = callback('Nette\Templating\Helpers::escapeHtml');
 		$click = class_exists('\Tracy\Dumper')
-			? function ($o, $c = FALSE) { return \Tracy\Dumper::toHtml($o, array('collapse' => $c)); }
+			? function ($o, $c = FALSE) {
+				return \Tracy\Dumper::toHtml($o, array('collapse' => $c));
+			}
 			: callback('\Tracy\Helpers::clickableDump');
 		$totalTime = $this->totalTime ? sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : 'none';
 
@@ -105,10 +106,14 @@ class Panel extends Nette\Object implements IBarPanel
 		return ob_get_clean();
 	}
 
+
+
 	public function begin(Google_Http_Request $request)
 	{
-		if ($this->current) return;
-		$this->calls[] = $this->current = (object)[
+		if ($this->current) {
+			return;
+		}
+		$this->calls[] = $this->current = (object) [
 			'url' => $request->getUrl(),
 			'params' => $request->getQueryParams(),
 			'result' => NULL,
@@ -118,6 +123,8 @@ class Panel extends Nette\Object implements IBarPanel
 		];
 	}
 
+
+
 	public function response(Google_Http_Request $request, $elapsed)
 	{
 		$this->totalTime += $this->current->time = $elapsed;
@@ -125,13 +132,17 @@ class Panel extends Nette\Object implements IBarPanel
 		$this->current->info['method'] = $request->getRequestMethod();
 	}
 
+
+
 	/**
 	 * @param \Google_Http_Request $request
 	 * @param $elapsed
 	 */
 	public function success(Google_Http_Request $request, $elapsed)
 	{
-		if (!$this->current) return;
+		if (!$this->current) {
+			return;
+		}
 		$this->response($request, $elapsed);
 		try {
 			$result = Nette\Utils\Json::decode($request->getResponseBody());
@@ -146,6 +157,7 @@ class Panel extends Nette\Object implements IBarPanel
 	}
 
 
+
 	/**
 	 * @param Google_Http_Request $request
 	 * @param float $elapsed
@@ -153,7 +165,9 @@ class Panel extends Nette\Object implements IBarPanel
 	 */
 	public function error(Google_Http_Request $request, $elapsed, Google_Exception $exception)
 	{
-		if (!$this->current) return;
+		if (!$this->current) {
+			return;
+		}
 		$this->response($request, $elapsed);
 		$this->current->exception = $exception;
 
