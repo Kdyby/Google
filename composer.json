@@ -1,33 +1,41 @@
 {
-    "name": "kdyby/google-auth",
-    "type": "library",
-    "description": "Google authentication for Nette ~2.1",
-    "keywords": ["nette", "google", "authentication", "auth", "login"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Mikuláš Dítě",
-            "email": "mikulas@dite.pro"
-        },
-        {
-            "name": "Google",
-            "homepage": "https://github.com/google/google-api-php-client/graphs/contributors"
-        }
-    ],
-    "require": {
-        "php": ">=5.4",
-        "nette/nette": "~2.1",
-        "google/apiclient": "~1.0.4@beta"
-    },
-    "support": {
-        "issues": "https://github.com/mikulas/nette-google/issues"
-    },
-    "autoload": {
-        "psr-0": {
-            "Kdyby\\Google\\": "src/"
-        },
-        "classmap": [
-            "src/Kdyby/Google/exceptions.php"
-        ]
-    }
+	"name": "kdyby/google",
+	"type": "library",
+	"description": "Google API wrapper and authentication for Nette ~2.1",
+	"keywords": ["nette", "google", "authentication", "auth", "login"],
+	"homepage": "http://kdyby.org",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Mikuláš Dítě",
+			"email": "mikulas@dite.pro"
+		},
+		{
+			"name": "Filip Procházka",
+			"homepage": "http://filip-prochazka.com",
+			"email": "filip@prochazka.su"
+		},
+		{
+			"name": "Google",
+			"homepage": "https://github.com/google/google-api-php-client/graphs/contributors"
+		}
+	],
+	"require": {
+		"ext-curl": "*",
+		"ext-json": "*",
+		"nette/nette": "~2.1@dev",
+		"google/apiclient": "~1.0.4@beta"
+	},
+	"support": {
+		"email": "filip@prochazka.su",
+		"issues": "https://github.com/kdyby/google/issues"
+	},
+	"autoload": {
+		"psr-0": {
+			"Kdyby\\Google\\": "src/"
+		},
+		"classmap": [
+			"src/Kdyby/Google/exceptions.php"
+		]
+	}
 }
