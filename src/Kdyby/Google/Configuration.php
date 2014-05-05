@@ -10,6 +10,7 @@
 
 namespace Kdyby\Google;
 
+use Nette\Http\Url;
 use Nette\Object;
 
 
@@ -21,17 +22,32 @@ use Nette\Object;
 class Configuration extends Object
 {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	public $clientId;
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	public $clientSecret;
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	public $apiKey;
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	public $scopes;
+
+	/**
+	 * @var string
+	 */
+	public $openIdUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+
+
 
 	/**
 	 * @param string $clientId
@@ -39,12 +55,23 @@ class Configuration extends Object
 	 * @param string $apiKey
 	 * @param array $scopes
 	 */
-	public function __construct($clientId, $clientSecret, $apiKey, $scopes)
+	public function __construct($clientId, $clientSecret, $apiKey, array $scopes = array())
 	{
 		$this->clientId = $clientId;
 		$this->clientSecret = $clientSecret;
 		$this->apiKey = $apiKey;
 		$this->scopes = $scopes;
+	}
+
+
+
+	/**
+	 * @return Url
+	 */
+	public function getOpenIdUrl()
+	{
+		$url = new Url($this->openIdUrl);
+		return $url->appendQuery(array('key' => $this->apiKey));
 	}
 
 }

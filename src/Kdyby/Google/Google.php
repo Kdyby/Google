@@ -32,8 +32,6 @@ use Nette\Utils\Json;
 class Google extends Object
 {
 
-	const OPENID_URL = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
-
 	/** @var Request */
 	protected $httpRequest;
 
@@ -95,12 +93,11 @@ class Google extends Object
 	 */
 	public function getIdentity()
 	{
-		$request = new Google_Http_Request(self::OPENID_URL . '?' . http_build_query([
-			'key' => $this->config->apiKey,
-		]));
-		$request->setRequestHeaders(
-			['Authorization' => 'Bearer ' . $this->getAccessToken()]
-		);
+		$request = new Google_Http_Request((string) $this->config->getOpenIdUrl());
+		$request->setRequestHeaders(array(
+			'Authorization' => 'Bearer ' . $this->getAccessToken()
+		));
+
 		return $this->client->execute($request);
 	}
 
