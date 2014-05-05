@@ -10,9 +10,10 @@
 
 namespace Kdyby\Google\DI;
 
-use Nette;
 use Nette\DI\CompilerExtension;
+use Nette\DI\Statement;
 use Nette\Utils\Validators;
+use Nette;
 
 
 
@@ -24,13 +25,16 @@ class GoogleExtension extends CompilerExtension
 {
 
 	/** @var array */
-	public $defaults = [
+	public $defaults = array(
 		'clientId' => NULL,
 		'clientSecret' => NULL,
 		'apiKey' => NULL,
-		'clearAllWithLogout' => FALSE,
-		'scopes' => ['profile', 'email'],
-	];
+		'clearAllWithLogout' => TRUE,
+		'scopes' => array('profile', 'email'),
+		'debugger' => '%debugMode%'
+	);
+
+
 
 	public function loadConfiguration()
 	{
@@ -42,45 +46,38 @@ class GoogleExtension extends CompilerExtension
 		Validators::assert($config['apiKey'], 'string:39', 'API Key');
 		Validators::assert($config['scopes'], 'list', 'Permission scopes');
 
-		$configurator = $builder->addDefinition($this->prefix('config'))
+		$builder->addDefinition($this->prefix('google'))
+			->setClass('Kdyby\Google\Google');
+
+		$builder->addDefinition($this->prefix('config'))
 			->setClass('Kdyby\Google\Configuration')
-			->setArguments([
+			->setArguments(array(
 				$config['clientId'],
 				$config['clientSecret'],
 				$config['apiKey'],
 				$config['scopes'],
-			])
-			->setInject(FALSE);
+			));
 
 		$builder->addDefinition($this->prefix('client'))
 			->setClass('Google_Client')
-			->addSetup('setClientId', [$config['clientId']])
-			->addSetup('setClientSecret', [$config['clientSecret']])
-			->addSetup('setScopes', [$config['scopes']])
-			->setInject(FALSE);
+			->addSetup('setClientId', array(
+				new Statement('?->clientId', array($this->prefix('@config')))
+			))
+			->addSetup('setClientSecret', array(
+				new Statement('?->clientSecret', array($this->prefix('@config')))
+			))
+			->addSetup('setScopes', array(
+				new Statement('?->scopes', array($this->prefix('@config')))
+			));
 
 		$curl = $builder->addDefinition($this->prefix('curl'))
 			->setClass('Kdyby\Google\IO\Curl')
-			->addSetup($this->prefix('@client') . '::setIo', ['@self'])
-			->setInject(FALSE);
+			->addSetup($this->prefix('@client') . '::setIo', array('@self'));
 
-		if ($builder->parameters['debugMode'])
-		{
+		if ($config['debugger']) {
 			$builder->addDefinition($this->prefix('panel'))
-				->setClass('Kdyby\Google\Diagnostics\Panel')
-				->setInject(FALSE);
-			$curl->addSetup($this->prefix('@panel') . '::register', ['@self']);
-		}
-
-		$builder->addDefinition($this->prefix('google'))
-			->setClass('Kdyby\Google\Google')
-			->setInject(FALSE);
-
-		if ($config['clearAllWithLogout']) {
-			$builder->getDefinition('user')
-				->addSetup('$sl = ?; ?->onLoggedOut[] = function () use ($sl) { $sl->getService(?)->clearAll(); }', [
-					'@container', '@self', $this->prefix('session')
-				]);
+				->setClass('Kdyby\Google\Diagnostics\Panel');
+			$curl->addSetup($this->prefix('@panel') . '::register', array('@self'));
 		}
 	}
 
