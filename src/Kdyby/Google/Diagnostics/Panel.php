@@ -1,11 +1,11 @@
 <?php
 
-namespace Mikulas\Google\Diagnostics;
+namespace Kdyby\Google\Diagnostics;
 
 use Google_Exception;
 use Google_Http_Request;
-use Mikulas\Google\Google;
-use Mikulas\Google\IO\Curl;
+use Kdyby\Google\Google;
+use Kdyby\Google\IO\Curl;
 use Nette;
 use Nette\Utils\Html;
 use Tracy\Debugger;

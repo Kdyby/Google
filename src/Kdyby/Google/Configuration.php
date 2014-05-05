@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikulas\Google;
+namespace Kdyby\Google;
 
 use Nette\Object;
 

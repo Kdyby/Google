@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikulas\Google\DI;
+namespace Kdyby\Google\DI;
 
 use Nette;
 use Nette\DI\CompilerExtension;
@@ -30,7 +30,7 @@ class GoogleExtension extends CompilerExtension
 		Validators::assert($config['scopes'], 'list', 'Permission scopes');
 
 		$configurator = $builder->addDefinition($this->prefix('config'))
-			->setClass('Mikulas\Google\Configuration')
+			->setClass('Kdyby\Google\Configuration')
 			->setArguments([
 				$config['clientId'],
 				$config['clientSecret'],
@@ -47,20 +47,20 @@ class GoogleExtension extends CompilerExtension
 			->setInject(FALSE);
 
 		$curl = $builder->addDefinition($this->prefix('curl'))
-			->setClass('Mikulas\Google\IO\Curl')
+			->setClass('Kdyby\Google\IO\Curl')
 			->addSetup($this->prefix('@client') . '::setIo', ['@self'])
 			->setInject(FALSE);
 
 		if ($builder->parameters['debugMode'])
 		{
 			$builder->addDefinition($this->prefix('panel'))
-				->setClass('Mikulas\Google\Diagnostics\Panel')
+				->setClass('Kdyby\Google\Diagnostics\Panel')
 				->setInject(FALSE);
 			$curl->addSetup($this->prefix('@panel') . '::register', ['@self']);
 		}
 
 		$builder->addDefinition($this->prefix('google'))
-			->setClass('Mikulas\Google\Google')
+			->setClass('Kdyby\Google\Google')
 			->setInject(FALSE);
 
 		if ($config['clearAllWithLogout']) {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Mikulas\Google;
+namespace Kdyby\Google;
 
 use Google_Client;
 use Google_Exception;
 use Google_Http_Request;
 use Google_IO_Abstract;
-use Mikulas\Google\Dialog\LoginDialog;
+use Kdyby\Google\Dialog\LoginDialog;
 use Nette\Http\Request;
 use Nette\Http\Response;
 use Nette\Http\UrlScript;

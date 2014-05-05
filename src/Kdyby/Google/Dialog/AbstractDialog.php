@@ -1,9 +1,9 @@
 <?php
 
-namespace Mikulas\Google\Dialog;
+namespace Kdyby\Google\Dialog;
 
-use Mikulas\Google\Configuration;
-use Mikulas\Google\Google;
+use Kdyby\Google\Configuration;
+use Kdyby\Google\Google;
 use Nette;
 use Nette\Application\UI\PresenterComponent;
 use Nette\Http\UrlScript;

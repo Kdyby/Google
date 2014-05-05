@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikulas\Google\Dialog;
+namespace Kdyby\Google\Dialog;
 
 
 use Nette\Http\Url;

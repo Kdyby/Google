@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikulas\Google\IO;
+namespace Kdyby\Google\IO;
 
 use Google_Exception;
 use Google_Http_Request;
