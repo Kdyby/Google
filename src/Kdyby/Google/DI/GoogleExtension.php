@@ -74,10 +74,20 @@ class GoogleExtension extends CompilerExtension
 			->setClass('Kdyby\Google\IO\Curl')
 			->addSetup($this->prefix('@client') . '::setIo', array('@self'));
 
+		$builder->addDefinition($this->prefix('session'))
+			->setClass('Kdyby\Google\SessionStorage');
+
 		if ($config['debugger']) {
 			$builder->addDefinition($this->prefix('panel'))
 				->setClass('Kdyby\Google\Diagnostics\Panel');
 			$curl->addSetup($this->prefix('@panel') . '::register', array('@self'));
+		}
+
+		if ($config['clearAllWithLogout']) {
+			$builder->getDefinition('user')
+				->addSetup('$sl = ?; ?->onLoggedOut[] = function () use ($sl) { $sl->getService(?)->clearAll(); }', array(
+					'@container', '@self', $this->prefix('session')
+				));
 		}
 	}
 
