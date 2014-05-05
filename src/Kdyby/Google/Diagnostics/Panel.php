@@ -56,7 +56,7 @@ class Panel extends Nette\Object implements IBarPanel
 	/**
 	 * @var array
 	 */
-	private $calls = [];
+	private $calls = array();
 
 	/**
 	 * @var \stdClass
@@ -113,14 +113,14 @@ class Panel extends Nette\Object implements IBarPanel
 		if ($this->current) {
 			return;
 		}
-		$this->calls[] = $this->current = (object) [
+		$this->calls[] = $this->current = (object) array(
 			'url' => $request->getUrl(),
 			'params' => $request->getQueryParams(),
 			'result' => NULL,
 			'exception' => NULL,
-			'info' => [],
+			'info' => array(),
 			'time' => 0,
-		];
+		);
 	}
 
 
