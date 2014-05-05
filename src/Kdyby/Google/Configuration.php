@@ -42,11 +42,6 @@ class Configuration extends Object
 	 */
 	public $scopes;
 
-	/**
-	 * @var string
-	 */
-	public $openIdUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
-
 
 
 	/**
@@ -61,17 +56,6 @@ class Configuration extends Object
 		$this->clientSecret = $clientSecret;
 		$this->apiKey = $apiKey;
 		$this->scopes = $scopes;
-	}
-
-
-
-	/**
-	 * @return Url
-	 */
-	public function getOpenIdUrl()
-	{
-		$url = new Url($this->openIdUrl);
-		return $url->appendQuery(array('key' => $this->apiKey));
 	}
 
 }
