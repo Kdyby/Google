@@ -1,7 +1,7 @@
 {
 	"name": "kdyby/google",
 	"type": "library",
-	"description": "Google API wrapper and authentication for Nette ~2.1",
+	"description": "Google API wrapper and authentication for Nette Framework",
 	"keywords": ["nette", "google", "authentication", "auth", "login"],
 	"homepage": "http://kdyby.org",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
