@@ -89,7 +89,7 @@ class Google extends Object
 	 */
 	public function getCurrentUrl()
 	{
-		return $this->httpRequest->url;
+		return clone $this->httpRequest->url;
 	}
 
 
