@@ -15,9 +15,13 @@ use Google_Http_Request;
 use Google_IO_Curl;
 use Nette\Diagnostics\Debugger;
 use Nette\MemberAccessException;
-use Nette\ObjectMixin;
+use Nette\Utils\ObjectMixin;
 
 
+
+if (!class_exists('Nette\Utils\ObjectMixin')) {
+	class_alias('Nette\ObjectMixin', 'Nette\Utils\ObjectMixin');
+}
 
 /**
  * @author Mikulas Dite <rullaf@gmail.com>
