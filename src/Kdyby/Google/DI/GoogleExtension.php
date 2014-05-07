@@ -31,6 +31,7 @@ class GoogleExtension extends CompilerExtension
 		'apiKey' => NULL,
 		'clearAllWithLogout' => TRUE,
 		'scopes' => array('profile', 'email'),
+		'returnUri' => NULL,
 		'debugger' => '%debugMode%'
 	);
 
@@ -49,7 +50,7 @@ class GoogleExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('client'))
 			->setClass('Kdyby\Google\Google');
 
-		$builder->addDefinition($this->prefix('config'))
+		$configuration = $builder->addDefinition($this->prefix('config'))
 			->setClass('Kdyby\Google\Configuration')
 			->setArguments(array(
 				$config['clientId'],
@@ -57,6 +58,44 @@ class GoogleExtension extends CompilerExtension
 				$config['apiKey'],
 				$config['scopes'],
 			));
+
+		if ($config['returnUri'] instanceof \stdClass) { // was an neon entity, must be valid presenter name with parameters
+			$destination = $config['returnUri']->value;
+
+			if (!self::isPresenterName($destination)) { // presenter name
+				throw new Nette\Utils\AssertionException("Please fix your configuration, expression '$destination' does not look like a valid presenter name.");
+			}
+
+			$configuration->addSetup('setReturnDestination', array($destination, $config['returnUri']->attributes));
+
+		} elseif ($config['returnUri'] !== NULL) { // must be a valid uri or presenter name
+			$destination = NULL;
+
+			if (self::isUrl($config['returnUri'])) {
+				$destination = new Nette\Http\UrlScript($config['returnUri']);
+				if (!$destination->scheme) {
+					$fixed = clone $destination;
+					$fixed->scheme = 'https';
+					throw new Nette\Utils\AssertionException("Please fix your configuration, scheme for returnUri is missing. Hint: `" . $this->name . ": returnUri: $fixed`");
+				}
+
+				if (!$destination->path) {
+					$fixed = clone $destination;
+					$fixed->path = '/oauth-google';
+					throw new Nette\Utils\AssertionException("Are you sure that you wanna redirect from Google auth to '$destination'? Hint: you might wanna add some path `" . $this->name . ": returnUri: $fixed`");
+				}
+
+				$destination = new Statement('Nette\Http\UrlScript', array((string) $destination));
+
+			} elseif (!self::isPresenterName($config['returnUri'])) { // presenter name
+				throw new Nette\Utils\AssertionException("Please fix your configuration, expression '{$config['returnUri']}' does not look like a valid presenter name.");
+
+			} else { // presenter name
+				$destination = $config['returnUri'];
+			}
+
+			$configuration->addSetup('setReturnDestination', array($destination));
+		}
 
 		$builder->addDefinition($this->prefix('apiClient'))
 			->setClass('Google_Client')
@@ -89,6 +128,31 @@ class GoogleExtension extends CompilerExtension
 					'@container', '@self', $this->prefix('session')
 				));
 		}
+	}
+
+
+
+	/**
+	 * @param string $value
+	 * @return bool
+	 */
+	protected function isUrl($value)
+	{
+		$alpha = "a-z\x80-\xFF";
+		$domain = "[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";
+		$topDomain = "[$alpha](?:[-0-9$alpha]{0,17}[$alpha])?";
+		return (bool) preg_match("(^(https?://)?(?:(?:$domain\\.)*$topDomain|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\[[0-9a-f:]{3,39}\\])(:\\d{1,5})?(/\\S*)?\\z)i", $value);
+	}
+
+
+
+	/**
+	 * @param string $value
+	 * @return bool
+	 */
+	protected function isPresenterName($value)
+	{
+		return (bool) preg_match('~^(?:\\/\\/)?\\:?[a-z0-9][a-z0-9:]+$~i', $value);
 	}
 
 

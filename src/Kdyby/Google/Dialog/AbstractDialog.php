@@ -12,9 +12,10 @@ namespace Kdyby\Google\Dialog;
 
 use Kdyby\Google\Configuration;
 use Kdyby\Google\Google;
+use Nette\Application;
+use Nette\Application\Responses;
 use Nette\Application\UI\PresenterComponent;
 use Nette\Http\UrlScript;
-use Nette\Utils\Html;
 use Nette;
 
 
@@ -49,9 +50,9 @@ abstract class AbstractDialog extends PresenterComponent
 	protected $session;
 
 	/**
-	 * @var \Nette\Http\UrlScript
+	 * @var Application\UI\Link|UrlScript
 	 */
-	protected $currentUrl;
+	protected $returnUri;
 
 
 
@@ -63,9 +64,7 @@ abstract class AbstractDialog extends PresenterComponent
 		$this->google = $google;
 		$this->config = $google->config;
 		$this->session = $google->getSession();
-		$this->currentUrl = $google->getCurrentUrl();
 
-		$this->monitor('Nette\Application\IPresenter');
 		parent::__construct();
 	}
 
@@ -82,15 +81,15 @@ abstract class AbstractDialog extends PresenterComponent
 
 
 	/**
-	 * @param \Nette\ComponentModel\Container $obj
+	 * @return Application\UI\Link|UrlScript
 	 */
-	protected function attached($obj)
+	protected function getReturnLink()
 	{
-		parent::attached($obj);
-
-		if ($obj instanceof Nette\Application\IPresenter) {
-			$this->currentUrl = new UrlScript($this->link('//response!'));
+		if (!$this->returnUri) {
+			$this->returnUri = $this->google->getReturnLink($this);
 		}
+
+		return $this->returnUri;
 	}
 
 
@@ -103,10 +102,11 @@ abstract class AbstractDialog extends PresenterComponent
 
 
 	/**
-	 * @throws \Nette\Application\AbortException
+	 * @throws Application\AbortException
 	 */
 	public function open()
 	{
+		$this->session->last_request = $this->getPresenter()->storeRequest();
 		$this->presenter->redirectUrl($this->getUrl());
 	}
 
@@ -125,12 +125,40 @@ abstract class AbstractDialog extends PresenterComponent
 	/**
 	 * Google get's the url for this handle when redirecting to login dialog.
 	 * It automatically calls the onResponse event.
+	 *
+	 * You don't have to redirect, the request before the auth process will be restored automatically.
 	 */
 	public function handleResponse()
 	{
 		$this->google->getUser(); // check the received parameters and save user
 		$this->onResponse($this);
-		$this->presenter->redirect('this');
+
+		if (!empty($this->session->last_request)) {
+			$presenter = $this->getPresenter();
+
+			$requests = $presenter->getSession('Nette.Application/requests');
+			$user = $presenter->getUser();
+
+			$key = $this->session->last_request;
+			if (!isset($requests[$key]) || ($requests[$key][0] !== NULL && $requests[$key][0] !== $user->getId())) {
+				return;
+			}
+
+			/** @var Application\Request $request */
+			$request = clone $requests[$key][1];
+			unset($requests[$key]);
+
+			$params = $request->getParameters();
+			$params[Application\UI\Presenter::FLASH_KEY] = $this->getParameter(Application\UI\Presenter::FLASH_KEY);
+			unset($params['do']);
+
+			$request->setParameters($params);
+			$request->setFlag(Application\Request::RESTORED, TRUE);
+
+			$presenter->sendResponse(new Responses\ForwardResponse($request));
+		}
+
+		$this->presenter->redirect('this', array('state' => NULL, 'code' => NULL));
 	}
 
 }

@@ -25,6 +25,7 @@ use Nette\Diagnostics\Debugger;
  * @property string $access_token
  * @property string $verified_id_token
  * @property string $user_id
+ * @property string $last_request
  */
 class SessionStorage extends Nette\Object
 {

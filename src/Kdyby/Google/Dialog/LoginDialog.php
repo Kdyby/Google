@@ -43,7 +43,7 @@ class LoginDialog extends AbstractDialog
 		$auth = $client->getAuth();
 
 		// response signal url
-		$client->setRedirectUri((string) $this->currentUrl);
+		$client->setRedirectUri((string) $this->getReturnLink());
 
 		// CSRF
 		$this->session->establishCSRFTokenState();

@@ -13,7 +13,12 @@ namespace Kdyby\Google;
 use Google_Client;
 use Google_Exception;
 use Google_IO_Abstract;
+use Kdyby\Google\Dialog\AbstractDialog;
+use Nette\Application;
+use Nette\Application\UI\PresenterComponent;
+use Nette\ComponentModel\IComponent;
 use Nette\Http\Request;
+use Nette\Http\Url;
 use Nette\Http\UrlScript;
 use Nette\Object;
 use Nette\Utils\Json;
@@ -35,7 +40,14 @@ if (!class_exists('Tracy\Debugger')) {
 class Google extends Object
 {
 
-	/** @var Request */
+	/**
+	 * @var \Nette\Application\Application
+	 */
+	private $app;
+
+	/**
+	 * @var Request
+	 */
 	protected $httpRequest;
 
 	/**
@@ -69,27 +81,16 @@ class Google extends Object
 
 
 	public function __construct(
-		Configuration $config, Request $httpRequest, SessionStorage $session,
+		Application\Application $app, Configuration $config, Request $httpRequest, SessionStorage $session,
 		Google_Client $client, Google_IO_Abstract $io)
 	{
+		$this->app = $app;
 		$this->config = $config;
 		$this->httpRequest = $httpRequest;
 		$this->session = $session;
 
 		$this->client = $client;
 		$this->client->setIo($io);
-		$this->client->setRedirectUri((string) $this->getCurrentUrl()->setQuery(''));
-	}
-
-
-
-	/**
-	 * @internal
-	 * @return UrlScript The current URL
-	 */
-	public function getCurrentUrl()
-	{
-		return clone $this->httpRequest->url;
 	}
 
 
@@ -102,6 +103,8 @@ class Google extends Object
 		if ($token = $this->getAccessToken()) {
 			$this->client->setAccessToken(json_encode($token));
 		}
+
+		$this->client->setRedirectUri((string) $this->getCurrentUrl()->setQuery(''));
 
 		return $this->client;
 	}
@@ -379,6 +382,8 @@ class Google extends Object
 			return $this->session->verified_id_token['payload'];
 		}
 
+		$this->client->setRedirectUri((string) $this->getCurrentUrl()->setQuery(''));
+
 		/** @var \Google_Auth_OAuth2 $auth */
 		$auth = $this->client->getAuth();
 
@@ -404,6 +409,57 @@ class Google extends Object
 	public function createLoginDialog()
 	{
 		return new Dialog\LoginDialog($this);
+	}
+
+
+
+	/**
+	 * @internal
+	 * @return UrlScript The current URL
+	 */
+	public function getCurrentUrl()
+	{
+		return new UrlScript((string) $this->getReturnLink());
+	}
+
+
+
+	/**
+	 * @param AbstractDialog $dialog
+	 * @return Application\UI\Link|UrlScript
+	 */
+	public function getReturnLink(AbstractDialog $dialog = NULL)
+	{
+		$destination = $this->config->getReturnDestination();
+
+		if ($destination[0] instanceof Url) {
+			return $destination[0];
+		}
+
+		$reset = array();
+
+		/** @var Application\UI\Presenter $presenter */
+		$presenter = $this->app->getPresenter();
+
+		/** @var PresenterComponent $parent */
+		$parent = $dialog ? $dialog->getParent() : $presenter;
+
+		do {
+			$prefix = $parent instanceof Application\IPresenter ? '' : $parent->lookupPath('Nette\Application\IPresenter');
+
+			foreach ($parent->getReflection()->getPersistentParams() as $name => $meta) {
+				$reset[($prefix ? $prefix . IComponent::NAME_SEPARATOR : '') . $name] = array_key_exists('def', $meta) ? $meta['def'] : NULL;
+			}
+
+		} while ($parent = $parent->getParent());
+
+		$args = is_array($destination[1]) ? $destination[1] : array_slice($destination, 1);
+
+		if ($dialog !== NULL) {
+			$args['do'] = $dialog->lookupPath('Nette\Application\IPresenter') . IComponent::NAME_SEPARATOR . 'response';
+		}
+
+		return $presenter->lazyLink('//' . ltrim($destination[0], '/'), $args + $reset);
 	}
 
 
