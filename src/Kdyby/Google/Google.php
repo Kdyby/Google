@@ -404,6 +404,18 @@ class Google extends Object
 
 
 	/**
+	 * Destroy the current session
+	 */
+	public function destroySession()
+	{
+		$this->accessToken = NULL;
+		$this->user = NULL;
+		$this->session->clearAll();
+	}
+
+
+
+	/**
 	 * @return Dialog\LoginDialog
 	 */
 	public function createLoginDialog()
