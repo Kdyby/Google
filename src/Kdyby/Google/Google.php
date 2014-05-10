@@ -306,6 +306,15 @@ class Google extends Object
 			}
 		}
 
+		// if the token is present, verify that the token is not expired
+		if (!empty($this->session->access_token)) {
+			$token = $this->session->access_token;
+			if (isset($token['created']) && isset($token['expires_in']) && (($token['created'] + ($token['expires_in'] - 30)) < time())) {
+				$this->session->clearAll();
+				return FALSE;
+			}
+		}
+
 		// as a fallback, just return whatever is in the persistent
 		// store, knowing nothing explicit (signed request, authorization
 		// code, etc.) was present to shadow it (or we saw a code in $_REQUEST,
