@@ -66,6 +66,19 @@ class Configuration extends Object
 
 
 	/**
+	 * @internal
+	 * @param \Google_Client $client
+	 */
+	public function configureClient(\Google_Client $client)
+	{
+		$client->setClientId($this->clientId);
+		$client->setClientSecret($this->clientSecret);
+		$client->setScopes($this->scopes);
+	}
+
+
+
+	/**
 	 * Accepts presenter name on which the Dialog component is attached.
 	 * You can also specify arguments as if the was the PresenterComponent::link() method.
 	 *

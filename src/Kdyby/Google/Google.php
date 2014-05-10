@@ -81,16 +81,14 @@ class Google extends Object
 
 
 	public function __construct(
-		Application\Application $app, Configuration $config, Request $httpRequest, SessionStorage $session,
-		Google_Client $client, Google_IO_Abstract $io)
+		Application\Application $app, Configuration $config, Request $httpRequest,
+		SessionStorage $session, Google_Client $client)
 	{
 		$this->app = $app;
 		$this->config = $config;
 		$this->httpRequest = $httpRequest;
 		$this->session = $session;
-
 		$this->client = $client;
-		$this->client->setIo($io);
 	}
 
 

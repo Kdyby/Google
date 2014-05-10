@@ -11,6 +11,7 @@
 namespace Kdyby\Google\DI;
 
 use Nette\DI\CompilerExtension;
+use Nette\DI\Container;
 use Nette\DI\Statement;
 use Nette\Utils\Validators;
 use Nette;
@@ -98,20 +99,20 @@ class GoogleExtension extends CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('apiClient'))
-			->setClass('Google_Client')
-			->addSetup('setClientId', array(
-				new Statement('?->clientId', array($this->prefix('@config')))
-			))
-			->addSetup('setClientSecret', array(
-				new Statement('?->clientSecret', array($this->prefix('@config')))
-			))
-			->addSetup('setScopes', array(
-				new Statement('?->scopes', array($this->prefix('@config')))
-			));
+			->setClass('Google_Client', array($this->prefix('@apiConfig')))
+			->addSetup('$this->addService(?, ?)', array($this->prefix('apiClient'), '@self'))
+			->addSetup('?->configureClient(?)', array($this->prefix('@config'), '@self'))
+			->addSetup('setIo', array($this->prefix('@apiIo')))
+			->addSetup('setAuth', array($this->prefix('@apiAuth')));
 
-		$curl = $builder->addDefinition($this->prefix('curl'))
-			->setClass('Kdyby\Google\IO\Curl')
-			->addSetup($this->prefix('@apiClient') . '::setIo', array('@self'));
+		$builder->addDefinition($this->prefix('apiConfig'))
+			->setClass('Google_Config');
+
+		$builder->addDefinition($this->prefix('apiAuth'))
+			->setClass('Google_Auth_OAuth2');
+
+		$curl = $builder->addDefinition($this->prefix('apiIo'))
+			->setClass('Kdyby\Google\IO\Curl');
 
 		$builder->addDefinition($this->prefix('session'))
 			->setClass('Kdyby\Google\SessionStorage');
