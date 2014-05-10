@@ -32,6 +32,7 @@ class GoogleExtension extends CompilerExtension
 		'apiKey' => NULL,
 		'clearAllWithLogout' => TRUE,
 		'scopes' => array('profile', 'email'),
+		'accessType' => 'online',
 		'returnUri' => NULL,
 		'debugger' => '%debugMode%'
 	);
@@ -47,6 +48,9 @@ class GoogleExtension extends CompilerExtension
 		Validators::assert($config['clientSecret'], 'string:24', 'Client secret');
 		Validators::assert($config['apiKey'], 'string:39', 'API Key');
 		Validators::assert($config['scopes'], 'list', 'Permission scopes');
+		if (!in_array($config['accessType'], $allowed = array('online', 'offline'))) {
+			throw new Nette\Utils\AssertionException("Key accessType is expected to be one of [" . implode(', ', $allowed) . "], but '" . $config['accessType'] . "' was given.");
+		}
 
 		$builder->addDefinition($this->prefix('client'))
 			->setClass('Kdyby\Google\Google');
@@ -106,7 +110,8 @@ class GoogleExtension extends CompilerExtension
 			->addSetup('setAuth', array($this->prefix('@apiAuth')));
 
 		$builder->addDefinition($this->prefix('apiConfig'))
-			->setClass('Google_Config');
+			->setClass('Google_Config')
+			->addSetup('setAccessType', array($config['accessType']));
 
 		$builder->addDefinition($this->prefix('apiAuth'))
 			->setClass('Google_Auth_OAuth2');

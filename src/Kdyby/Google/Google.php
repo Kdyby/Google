@@ -151,7 +151,11 @@ class Google extends Object
 		}
 
 		if (!isset($token['access_token'])) {
-			throw new InvalidArgumentException("It's required that the token has 'access_token' field.");
+			throw new InvalidArgumentException("It's required that the token has 'access_token' or 'refresh_token' field.");
+		}
+
+		if (isset($token['refresh_token'])) {
+			$this->setRefreshToken($token['refresh_token']);
 		}
 
 		$this->accessToken = $token;
@@ -181,6 +185,28 @@ class Google extends Object
 		}
 
 		return $this->accessToken;
+	}
+
+
+
+	/**
+	 * @param string $token
+	 * @return Google
+	 */
+	public function setRefreshToken($token)
+	{
+		$this->session->refresh_token = $token;
+		return $this;
+	}
+
+
+
+	/**
+	 * @return string
+	 */
+	public function getRefreshToken()
+	{
+		return $this->session->refresh_token;
 	}
 
 
@@ -247,12 +273,37 @@ class Google extends Object
 			if ($accessToken = $this->getAccessTokenFromCode($code)) {
 				$this->session->code = $code;
 				$this->session->verified_id_token = NULL;
+				$this->session->refresh_token = isset($accessToken['refresh_token']) ? $accessToken['refresh_token'] : NULL;
 				return $this->session->access_token = $accessToken;
 			}
 
 			// code was bogus, so everything based on it should be invalidated.
 			$this->session->clearAll();
 			return FALSE;
+		}
+
+		if (empty($this->session->access_token) && !empty($this->session->refresh_token)) {
+			/** @var \Google_Auth_OAuth2 $auth  */
+			$auth = $this->getClient()->getAuth();
+
+			try {
+				$auth->refreshToken($this->session->refresh_token);
+				$accessToken = Json::decode($auth->getAccessToken(), Json::FORCE_ARRAY);
+
+				if (empty($response) || !is_array($response)) {
+					throw new UnexpectedValueException('Access token is expected to be a valid json array.');
+				}
+
+				$accessToken['refresh_token'] = $this->session->refresh_token;
+
+				$this->session->code = NULL;
+				return $this->session->access_token = $accessToken;
+
+			} catch (\Exception $e) {
+				Debugger::log($e, 'google');
+				$this->session->clearAll();
+				return FALSE;
+			}
 		}
 
 		// as a fallback, just return whatever is in the persistent
@@ -285,6 +336,7 @@ class Google extends Object
 			return $response;
 
 		} catch (\Exception $e) {
+			Debugger::log($e, 'google');
 			// most likely that user very recently revoked authorization.
 			// In any event, we don't have an access token, so say so.
 			return FALSE;
@@ -349,7 +401,7 @@ class Google extends Object
 	{
 		try {
 			if (!$verifiedIdToken = $this->getVerifiedIdToken()) {
-				return 0;
+				return $this->getProfile()->getId();
 			}
 
 			if (!array_key_exists(\Google_Auth_LoginTicket::USER_ATTR, $verifiedIdToken)) {
@@ -373,6 +425,10 @@ class Google extends Object
 	protected function getVerifiedIdToken()
 	{
 		if (!$token = $this->getAccessToken()) {
+			return NULL;
+		}
+
+		if (!isset($token['id_token'])) {
 			return NULL;
 		}
 
