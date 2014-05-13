@@ -28,7 +28,8 @@
 		"google/apiclient": "~1.0.4@beta"
 	},
 	"require-dev": {
-		"nette/tester": "@dev"
+		"nette/tester": "@dev",
+		"jakub-onderka/php-parallel-lint": "~0.6"
 	},
 	"support": {
 		"email": "filip@prochazka.su",
