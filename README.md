@@ -1,5 +1,5 @@
 Kdyby/Google [![Build Status](https://secure.travis-ci.org/Kdyby/Google.png?branch=master)](http://travis-ci.org/Kdyby/Google)
-====================
+===========================
 
 Integration of [google/google-api-php-client](https://github.com/google/google-api-php-client) into Nette Framework with authorization component using Google services.
 
@@ -9,7 +9,9 @@ Requirements
 
 Kdyby/Google requires PHP 5.3.2 or higher with cUrl extension enabled.
 
-- [Nette Framework 2.0.x](https://github.com/nette/nette)
+- [Nette Framework](https://github.com/nette/nette)
+- [Kdyby/CurlCaBundle](https://github.com/Kdyby/CurlCaBundle)
+- [Google/PhpApiClient](https://github.com/google/google-api-php-client)
 
 
 Installation
@@ -18,8 +20,17 @@ Installation
 The best way to install Kdyby/Google is using  [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require kdyby/google:@dev
+$ composer require kdyby/google:~0.1
 ```
+
+For Nette `2.1` and newer is `~0.1`
+
+
+Documentation
+------------
+
+Lear how to authenticate the user using Google's oauth or call Google's api in [documentation](https://github.com/Kdyby/Google/blob/master/docs/en/index.md).
+
 
 
 -----
