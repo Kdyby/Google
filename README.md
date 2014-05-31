@@ -3,7 +3,7 @@ Kdyby/Google
 
 [![Build Status](https://travis-ci.org/Kdyby/Google.svg?branch=master)](https://travis-ci.org/Kdyby/Google)
 [![Downloads this Month](https://img.shields.io/packagist/dm/Kdyby/Google.svg)](https://packagist.org/packages/Kdyby/Google)
-[![Latest stable](img.shields.io/packagist/v/Kdyby/Google.svg)](https://packagist.org/packages/Kdyby/Google)
+[![Latest stable](https://img.shields.io/packagist/v/Kdyby/Google.svg)](https://packagist.org/packages/Kdyby/Google)
 
 Integration of [google/google-api-php-client](https://github.com/google/google-api-php-client) into Nette Framework with authorization component using Google services.
 
