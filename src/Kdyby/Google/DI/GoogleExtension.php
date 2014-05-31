@@ -46,7 +46,7 @@ class GoogleExtension extends CompilerExtension
 		$config = $this->getConfig($this->defaults);
 		Validators::assert($config['clientId'], 'string', 'Client ID');
 		Validators::assert($config['clientSecret'], 'string:24', 'Client secret');
-		Validators::assert($config['apiKey'], 'string:39', 'API Key');
+		Validators::assert($config['apiKey'], 'string:39|null', 'API Key');
 		Validators::assert($config['scopes'], 'list', 'Permission scopes');
 		if (!in_array($config['accessType'], $allowed = array('online', 'offline'))) {
 			throw new Nette\Utils\AssertionException("Key accessType is expected to be one of [" . implode(', ', $allowed) . "], but '" . $config['accessType'] . "' was given.");
