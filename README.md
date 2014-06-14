@@ -33,7 +33,7 @@ For Nette `2.1` and newer is `~0.1`
 Documentation
 ------------
 
-Lear how to authenticate the user using Google's oauth or call Google's api in [documentation](https://github.com/Kdyby/Google/blob/master/docs/en/index.md).
+Learn how to authenticate the user using Google's oauth or call Google's api in [documentation](https://github.com/Kdyby/Google/blob/master/docs/en/index.md).
 
 
 
