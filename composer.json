@@ -29,7 +29,7 @@
 	},
 	"require-dev": {
 		"nette/tester": "@dev",
-		"jakub-onderka/php-parallel-lint": "~0.6"
+		"jakub-onderka/php-parallel-lint": "~0.7"
 	},
 	"support": {
 		"email": "filip@prochazka.su",
