@@ -101,9 +101,7 @@ class LoginPresenter extends BasePresenter
 	/** @return \Kdyby\Google\Dialog\LoginDialog */
 	protected function createComponentGoogleLogin()
 	{
-		$dialog = $this->google->createDialog('login');
-		/** @var \Kdyby\Google\Dialog\LoginDialog $dialog */
-
+		$dialog = new \Kdyby\Google\Dialog\LoginDialog($this->google);
 		$dialog->onResponse[] = function (\Kdyby\Google\Dialog\LoginDialog $dialog) {
 			$google = $dialog->getGoogle();
 
