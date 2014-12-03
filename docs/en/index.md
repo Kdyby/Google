@@ -36,17 +36,17 @@ You also might wanna provide default `returnUri`.
 google:
 	clientId: "2d93a3e822b6-ac8e06fdb68ac8e06fda221e05cfe042.apps.googleusercontent.com"
 	clientSecret: "5A7979_ed14aff7f9bc0a_dC"
-	returnUri: ':Forum:Categories:'(do=login-google-response)
+	returnUri: ':Forum:Categories:'(do=googleLogin-response)
 ```
 
 The "problem" with Google oauth is that it's brutally strict. You have to have specifically defined endpoint and it won't redirect to anything else.
 The Github or Facebook just redirects to almost everything you give it but not Google, so what now?
 
 The solution to that is the `returnUri`. This configuration value should be a standard Nette presenter path and parameters in the brackets.
-In the example you can see I'm specifying the presenter `:Forum:Categories:` with `default` action and the signal `login-google-response`,
+In the example you can see I'm specifying the presenter `:Forum:Categories:` with `default` action and the signal `googleLogin-response`,
 because that's the signal of the UI component that handles the communication.
 
-Magic happens in the component `login-google`, it stores the request before it redirects to the Google Oauth endpoint, and restores it after user is redirected back.
+Magic happens in the component `googleLogin`, it stores the request before it redirects to the Google Oauth endpoint, and restores it after user is redirected back.
 This behaviour simulates the on-page sign in, that you should be able to do using signals. Image you're reading a forum thread and you're not signed in.
 Now you wanna write something and you have to sign in for that. Without this behaviour, you will be redirected to some endpoint of the application that has no context of where have you been.
 So you'll end up either on homepage or the programmer has to handle this manually, which is annoying and unnecessary, because it's already handled by the UI component.
