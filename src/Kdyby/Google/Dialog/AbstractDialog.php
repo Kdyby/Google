@@ -136,26 +136,24 @@ abstract class AbstractDialog extends PresenterComponent
 		if (!empty($this->session->last_request)) {
 			$presenter = $this->getPresenter();
 
-			$requests = $presenter->getSession('Nette.Application/requests');
-			$user = $presenter->getUser();
+			try {
+				$presenter->restoreRequest($this->session->last_request);
 
-			$key = $this->session->last_request;
-			if (!isset($requests[$key]) || ($requests[$key][0] !== NULL && $requests[$key][0] !== $user->getId())) {
-				return;
+			} catch (Application\AbortException $e) {
+				$refl = new \ReflectionProperty('Nette\Application\UI\Presenter', 'response');
+				$refl->setAccessible(TRUE);
+
+				$response = $refl->getValue($presenter);
+				if ($response instanceof Responses\ForwardResponse) {
+					$forwardRequest = $response->getRequest();
+
+					$params = $forwardRequest->getParameters();
+					unset($params['do']); // remove the signal to the google component
+					$forwardRequest->setParameters($params);
+				}
+
+				$presenter->sendResponse($response);
 			}
-
-			/** @var Application\Request $request */
-			$request = clone $requests[$key][1];
-			unset($requests[$key]);
-
-			$params = $request->getParameters();
-			$params[Application\UI\Presenter::FLASH_KEY] = $presenter->getParameter(Application\UI\Presenter::FLASH_KEY);
-			unset($params['do']);
-
-			$request->setParameters($params);
-			$request->setFlag(Application\Request::RESTORED, TRUE);
-
-			$presenter->sendResponse(new Responses\ForwardResponse($request));
 		}
 
 		$this->presenter->redirect('this', array('state' => NULL, 'code' => NULL));
