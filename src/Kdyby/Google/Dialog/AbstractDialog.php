@@ -149,7 +149,7 @@ abstract class AbstractDialog extends PresenterComponent
 			unset($requests[$key]);
 
 			$params = $request->getParameters();
-			$params[Application\UI\Presenter::FLASH_KEY] = $this->getParameter(Application\UI\Presenter::FLASH_KEY);
+			$params[Application\UI\Presenter::FLASH_KEY] = $presenter->getParameter(Application\UI\Presenter::FLASH_KEY);
 			unset($params['do']);
 
 			$request->setParameters($params);
