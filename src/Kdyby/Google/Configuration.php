@@ -74,6 +74,7 @@ class Configuration extends Object
 		$client->setClientId($this->clientId);
 		$client->setClientSecret($this->clientSecret);
 		$client->setScopes($this->scopes);
+		$client->setDeveloperKey($this->apiKey);
 	}
 
 
