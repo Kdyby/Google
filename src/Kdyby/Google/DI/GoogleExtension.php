@@ -87,6 +87,15 @@ class GoogleExtension extends CompilerExtension
 
 			$configuration->addSetup('setReturnDestination', array($destination, $config['returnUri']->attributes));
 
+		} elseif ($config['returnUri'] instanceof Statement) { // was an neon entity, must be valid presenter name with parameters
+			$destination = $config['returnUri']->entity;
+
+			if (!self::isPresenterName($destination)) { // presenter name
+				throw new Nette\Utils\AssertionException("Please fix your configuration, expression '$destination' does not look like a valid presenter name.");
+			}
+
+			$configuration->addSetup('setReturnDestination', array($destination, $config['returnUri']->arguments));
+
 		} elseif ($config['returnUri'] !== NULL) { // must be a valid uri or presenter name
 			$destination = NULL;
 
