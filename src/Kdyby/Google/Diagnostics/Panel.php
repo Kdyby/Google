@@ -20,23 +20,6 @@ use Tracy\IBarPanel;
 
 
 
-if (!class_exists('Tracy\Debugger')) {
-	class_alias('Nette\Diagnostics\Debugger', 'Tracy\Debugger');
-}
-
-if (!class_exists('Tracy\Bar')) {
-	class_alias('Nette\Diagnostics\Bar', 'Tracy\Bar');
-	class_alias('Nette\Diagnostics\BlueScreen', 'Tracy\BlueScreen');
-	class_alias('Nette\Diagnostics\Helpers', 'Tracy\Helpers');
-	class_alias('Nette\Diagnostics\IBarPanel', 'Tracy\IBarPanel');
-}
-
-if (!class_exists('Tracy\Dumper')) {
-	class_alias('Nette\Diagnostics\Dumper', 'Tracy\Dumper');
-}
-
-
-
 /**
  * @author Mikulas Dite <rullaf@gmail.com>
  * @author Filip Procházka <filip@prochazka.su>

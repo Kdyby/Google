@@ -27,10 +27,6 @@ use Tracy\Debugger;
 
 
 
-if (!class_exists('Tracy\Debugger')) {
-	class_alias('Nette\Diagnostics\Debugger', 'Tracy\Debugger');
-}
-
 /**
  * @author Mikulas Dite <rullaf@gmail.com>
  * @author Filip Procházka <filip@prochazka.su>
