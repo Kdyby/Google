@@ -71,7 +71,7 @@ class Panel extends Nette\Object implements IBarPanel
 	public function getTab()
 	{
 		$img = Html::el('img')->height('16')->src('data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . '/developers-logo.png')));
-		$tab = Html::el('span')->title('Google')->add($img);
+		$tab = Html::el('span')->title('Google')->addHtml($img);
 		$title = Html::el()->setText('Google');
 		if ($this->calls) {
 			$title->setText(
@@ -79,7 +79,7 @@ class Panel extends Nette\Object implements IBarPanel
 				' / ' . sprintf('%0.2f', $this->totalTime) . ' s'
 			);
 		}
-		return (string) $tab->add($title);
+		return (string) $tab->addHtml($title);
 	}
 
 
