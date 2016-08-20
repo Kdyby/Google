@@ -71,7 +71,7 @@ class Panel extends Nette\Object implements IBarPanel
 	public function getTab()
 	{
 		$img = Html::el('img')->height('16')->src('data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . '/developers-logo.png')));
-		$tab = Html::el('span')->title('Google')->add($img);
+		$tab = Html::el('span')->title('Google')->addHtml($img);
 		$title = Html::el()->setText('Google');
 		if ($this->calls) {
 			$title->setText(
@@ -79,7 +79,7 @@ class Panel extends Nette\Object implements IBarPanel
 				' / ' . sprintf('%0.2f', $this->totalTime) . ' s'
 			);
 		}
-		return (string) $tab->add($title);
+		return (string) $tab->addText($title);
 	}
 
 
@@ -94,12 +94,12 @@ class Panel extends Nette\Object implements IBarPanel
 		}
 
 		ob_start();
-		$esc = callback('Nette\Templating\Helpers::escapeHtml');
+		$esc = array('Nette\Templating\Helpers', 'escapeHtml');
 		$click = class_exists('\Tracy\Dumper')
 			? function ($o, $c = FALSE) {
 				return \Tracy\Dumper::toHtml($o, array('collapse' => $c));
 			}
-			: callback('\Tracy\Helpers::clickableDump');
+			: array('\Tracy\Helpers', 'clickableDump');
 		$totalTime = $this->totalTime ? sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : 'none';
 
 		require __DIR__ . '/panel.phtml';
