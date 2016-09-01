@@ -11,8 +11,6 @@
 namespace Kdyby\Google;
 
 use Nette;
-use Nette\Diagnostics\Debugger;
-
 
 
 /**
@@ -41,6 +39,8 @@ class SessionStorage extends Nette\Object
 	/**
 	 * @param \Nette\Http\Session $session
 	 * @param Configuration $config
+	 *
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function __construct(Nette\Http\Session $session, Configuration $config)
 	{
@@ -61,8 +61,6 @@ class SessionStorage extends Nette\Object
 		}
 	}
 
-
-
 	/**
 	 * Stores the given ($key, $value) pair, so that future calls to
 	 * getPersistentData($key) return $value. This call may be in another request.
@@ -71,6 +69,9 @@ class SessionStorage extends Nette\Object
 	 * methods.  The implementation uses PHP sessions to maintain
 	 * a store for authorization codes, user ids, CSRF states, and
 	 * access tokens.
+	 *
+	 * @param $key
+	 * @param $value
 	 */
 	public function set($key, $value)
 	{

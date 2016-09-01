@@ -12,7 +12,6 @@ namespace Kdyby\Google;
 
 use Google_Client;
 use Google_Exception;
-use Google_IO_Abstract;
 use Kdyby\Google\Dialog\AbstractDialog;
 use Nette\Application;
 use Nette\Application\UI\PresenterComponent;
@@ -265,14 +264,14 @@ class Google extends Object
 	 * return a valid user access token, or false if one is determined
 	 * to not be available.
 	 *
-	 * @return array A valid user access token, or false if one could not be determined.
+	 * @return array|bool A valid user access token, or false if one could not be determined.
 	 */
 	protected function getUserAccessToken()
 	{
 		if (($code = $this->getCode()) && $code != $this->session->code) {
 			if ($accessToken = $this->getAccessTokenFromCode($code)) {
 				$this->session->code = $code;
-				$this->session->verified_id_token = NULL;
+				$this->session->token_payload = NULL;
 				$this->session->refresh_token = isset($accessToken['refresh_token']) ? $accessToken['refresh_token'] : NULL;
 				return $this->session->access_token = $accessToken;
 			}
@@ -283,12 +282,10 @@ class Google extends Object
 		}
 
 		if (empty($this->session->access_token) && !empty($this->session->refresh_token)) {
-			/** @var \Google_Auth_OAuth2 $auth  */
-			$auth = $this->client->getAuth();
 
 			try {
-				$auth->refreshToken($this->session->refresh_token);
-				$accessToken = Json::decode($auth->getAccessToken(), Json::FORCE_ARRAY);
+				$this->client->refreshToken($this->session->refresh_token);
+				$accessToken = Json::decode($this->client->getAccessToken(), Json::FORCE_ARRAY);
 
 				if (empty($accessToken) || !is_array($accessToken)) {
 					throw new UnexpectedValueException('Access token is expected to be a valid json array.');
@@ -326,7 +323,7 @@ class Google extends Object
 
 	/**
 	 * @param string $code An authorization code.
-	 * @return array An access token exchanged for the authorization code, or false if an access token could not be generated.
+	 * @return array|bool An access token exchanged for the authorization code, or false if an access token could not be generated.
 	 */
 	protected function getAccessTokenFromCode($code)
 	{
@@ -336,7 +333,7 @@ class Google extends Object
 
 		try {
 			$this->client->setRedirectUri((string) $this->getCurrentUrl());
-			$response = Json::decode($this->client->authenticate($code), Json::FORCE_ARRAY);
+			$response = $this->client->authenticate($code);
 
 			if (empty($response) || !is_array($response)) {
 				return FALSE;
@@ -413,11 +410,13 @@ class Google extends Object
 				return $this->getProfile()->getId();
 			}
 
-			if (!array_key_exists(\Google_Auth_LoginTicket::USER_ATTR, $verifiedIdToken)) {
+			$userIdKey = "sub";
+
+			if (!array_key_exists($userIdKey, $verifiedIdToken)) {
 				return 0;
 			}
 
-			return $verifiedIdToken[\Google_Auth_LoginTicket::USER_ATTR];
+			return $verifiedIdToken[$userIdKey];
 
 		} catch (\Exception $e) {
 			Debugger::log($e, 'google');
@@ -441,27 +440,25 @@ class Google extends Object
 			return NULL;
 		}
 
-		if (!empty($this->session->verified_id_token['payload'])) {
-			return $this->session->verified_id_token['payload'];
+		if (!empty($this->session->token_payload)) {
+			return $this->session->token_payload;
 		}
 
 		$this->client->setRedirectUri((string) $this->getCurrentUrl());
 
-		/** @var \Google_Auth_OAuth2 $auth */
-		$auth = $this->client->getAuth();
-
 		// ensure the token is set
-		$auth->setAccessToken(json_encode($token));
+		$this->client->setAccessToken(json_encode($token));
 
-		$loginTicket = $auth->verifyIdToken();
-		$this->session->verified_id_token = $loginTicket->getAttributes();
+		$tokenPayload =  $this->client->verifyIdToken();
 
-		if (!array_key_exists('payload', $this->session->verified_id_token)) {
-			$this->session->verified_id_token = NULL;
+		if(!$tokenPayload) {
+			$this->session->token_payload = NULL;
 			return NULL;
 		}
 
-		return $this->session->verified_id_token['payload'];
+		$this->session->token_payload = $tokenPayload;
+
+		return $this->session->token_payload;
 	}
 
 

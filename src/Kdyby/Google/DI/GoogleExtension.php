@@ -11,7 +11,6 @@
 namespace Kdyby\Google\DI;
 
 use Nette\DI\CompilerExtension;
-use Nette\DI\Container;
 use Nette\DI\Statement;
 use Nette\Utils\Validators;
 use Nette;
@@ -126,30 +125,22 @@ class GoogleExtension extends CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('apiClient'))
-			->setClass('Google_Client', array($this->prefix('@apiConfig')))
+			->setClass('Google_Client')
 			->addSetup('$this->addService(?, ?)', array($this->prefix('apiClient'), '@self'))
 			->addSetup('?->configureClient(?)', array($this->prefix('@config'), '@self'))
-			->addSetup('setIo', array($this->prefix('@apiIo')))
-			->addSetup('setAuth', array($this->prefix('@apiAuth')));
-
-		$builder->addDefinition($this->prefix('apiConfig'))
-			->setClass('Google_Config')
 			->addSetup('setAccessType', array($config['accessType']));
 
-		$builder->addDefinition($this->prefix('apiAuth'))
-			->setClass('Google_Auth_OAuth2');
-
-		$curl = $builder->addDefinition($this->prefix('apiIo'))
-			->setClass('Kdyby\Google\IO\Curl');
+//		$curl = $builder->addDefinition($this->prefix('apiIo'))
+//			->setClass('Kdyby\Google\IO\Curl');
 
 		$builder->addDefinition($this->prefix('session'))
 			->setClass('Kdyby\Google\SessionStorage');
 
-		if ($config['debugger']) {
-			$builder->addDefinition($this->prefix('panel'))
-				->setClass('Kdyby\Google\Diagnostics\Panel');
-			$curl->addSetup($this->prefix('@panel') . '::register', array('@self'));
-		}
+//		if ($config['debugger']) {
+//			$builder->addDefinition($this->prefix('panel'))
+//				->setClass('Kdyby\Google\Diagnostics\Panel');
+//			$curl->addSetup($this->prefix('@panel') . '::register', array('@self'));
+//		}
 
 		if ($config['clearAllWithLogout']) {
 			$builder->getDefinition('user')
