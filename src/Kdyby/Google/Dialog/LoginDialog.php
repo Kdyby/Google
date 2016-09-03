@@ -39,15 +39,13 @@ class LoginDialog extends AbstractDialog
 	public function getUrl()
 	{
 		$client = $this->google->client;
-		/** @var \Google_Auth_OAuth2 $auth */
-		$auth = $client->getAuth();
 
 		// response signal url
 		$client->setRedirectUri((string) $this->getReturnLink());
 
 		// CSRF
 		$this->session->establishCSRFTokenState();
-		$auth->setState($this->session->state);
+		$client->setState($this->session->state);
 
 		return new UrlScript($this->google->client->createAuthUrl());
 	}

@@ -11,10 +11,9 @@
 namespace Kdyby\Google\Diagnostics;
 
 use Google_Exception;
-use Google_Http_Request;
-use Kdyby\Google\IO\Curl;
 use Nette\Utils\Html;
 use Nette;
+use Psr\Http\Message\RequestInterface;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
@@ -108,7 +107,7 @@ class Panel extends Nette\Object implements IBarPanel
 
 
 
-	public function begin(Google_Http_Request $request)
+	public function begin(RequestInterface $request)
 	{
 		if ($this->current) {
 			return;
@@ -125,7 +124,7 @@ class Panel extends Nette\Object implements IBarPanel
 
 
 
-	public function response(Google_Http_Request $request, $elapsed)
+	public function response(RequestInterface $request, $elapsed)
 	{
 		$this->totalTime += $this->current->time = $elapsed;
 		$this->current->params = $request->getQueryParams();
@@ -135,10 +134,10 @@ class Panel extends Nette\Object implements IBarPanel
 
 
 	/**
-	 * @param \Google_Http_Request $request
+	 * @param RequestInterface $request
 	 * @param $elapsed
 	 */
-	public function success(Google_Http_Request $request, $elapsed)
+	public function success(RequestInterface $request, $elapsed)
 	{
 		if (!$this->current) {
 			return;
@@ -159,11 +158,11 @@ class Panel extends Nette\Object implements IBarPanel
 
 
 	/**
-	 * @param Google_Http_Request $request
+	 * @param RequestInterface $request
 	 * @param float $elapsed
 	 * @param Google_Exception $exception
 	 */
-	public function error(Google_Http_Request $request, $elapsed, Google_Exception $exception)
+	public function error(RequestInterface $request, $elapsed, Google_Exception $exception)
 	{
 		if (!$this->current) {
 			return;
@@ -176,7 +175,7 @@ class Panel extends Nette\Object implements IBarPanel
 
 
 
-	public function register(Curl $client)
+	public function register(GuzzleHttpHandler $client)
 	{
 		$client->onRequest[] = $this->begin;
 		$client->onError[] = $this->error;
