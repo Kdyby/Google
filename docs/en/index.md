@@ -145,7 +145,7 @@ class LoginPresenter extends BasePresenter
 				 * You can celebrate now! The user is authenticated :)
 				 */
 
-			} catch (\Exception $e) {
+			} catch (\Kdyby\Google\GoogleApiException $e) {
 				/**
 				 * You might wanna know what happened, so let's log the exception.
 				 *
