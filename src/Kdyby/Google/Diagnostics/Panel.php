@@ -13,8 +13,8 @@ namespace Kdyby\Google\Diagnostics;
 use Google_Exception;
 use Google_Http_Request;
 use Kdyby\Google\IO\Curl;
-use Nette\Utils\Html;
 use Nette;
+use Nette\Utils\Html;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
@@ -56,7 +56,7 @@ class Panel extends Nette\Object implements IBarPanel
 	/**
 	 * @var array
 	 */
-	private $calls = array();
+	private $calls = [];
 
 	/**
 	 * @var \stdClass
@@ -70,16 +70,21 @@ class Panel extends Nette\Object implements IBarPanel
 	 */
 	public function getTab()
 	{
-		$img = Html::el('img')->height('16')->src('data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . '/developers-logo.png')));
-		$tab = Html::el('span')->title('Google')->addHtml($img);
-		$title = Html::el()->setText('Google');
+		$logo = Html::el()->setHtml(file_get_contents(__DIR__ . '/Google_Developers_logo.svg'));
+		$tab = Html::el()->addHtml($logo);
+		$title = Html::el('span', ['class' => 'tracy-label'])->title('Google');
+
 		if ($this->calls) {
 			$title->setText(
 				count($this->calls) . ' call' . (count($this->calls) > 1 ? 's' : '') .
 				' / ' . sprintf('%0.2f', $this->totalTime) . ' s'
 			);
+
+		} else {
+			$title->setText('Google');
 		}
-		return (string) $tab->addText($title);
+
+		return (string)$tab->addHtml($title);
 	}
 
 
@@ -94,14 +99,16 @@ class Panel extends Nette\Object implements IBarPanel
 		}
 
 		ob_start();
-		$esc = array('Nette\Templating\Helpers', 'escapeHtml');
-		$click = class_exists('\Tracy\Dumper')
-			? function ($o, $c = FALSE) {
-				return \Tracy\Dumper::toHtml($o, array('collapse' => $c));
-			}
-			: array('\Tracy\Helpers', 'clickableDump');
-		$totalTime = $this->totalTime ? sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : 'none';
+		if (class_exists('Latte\Runtime\Filters')) {
+			$esc = Nette\Utils\Callback::closure('Latte\Runtime\Filters::escapeHtml');
+		} else {
+			$esc = 'Nette\Templating\Helpers::escapeHtml';
+		}
 
+        $click = class_exists('\Tracy\Dumper')
+            ? function ($o, $c = FALSE) { return \Tracy\Dumper::toHtml($o, ['collapse' => $c]); }
+            : '\Tracy\Helpers::clickableDump';
+        $totalTime = $this->totalTime ? sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : 'none';
 		require __DIR__ . '/panel.phtml';
 		return ob_get_clean();
 	}
@@ -182,17 +189,7 @@ class Panel extends Nette\Object implements IBarPanel
 		$client->onError[] = $this->error;
 		$client->onSuccess[] = $this->success;
 
-		self::getDebuggerBar()->addPanel($this);
-	}
-
-
-
-	/**
-	 * @return \Tracy\Bar
-	 */
-	private static function getDebuggerBar()
-	{
-		return method_exists('Tracy\Debugger', 'getBar') ? Debugger::getBar() : Debugger::$bar;
+        Debugger::getBar()->addPanel($this);
 	}
 
 }

@@ -184,16 +184,4 @@ class GoogleExtension extends CompilerExtension
 		return (bool) preg_match('~^(?:\\/\\/)?\\:?[a-z0-9][a-z0-9:]+$~i', $value);
 	}
 
-
-
-	/**
-	 * @param \Nette\Configurator $configurator
-	 */
-	public static function register(Nette\Configurator $configurator)
-	{
-		$configurator->onCompile[] = function ($config, Nette\DI\Compiler $compiler) {
-			$compiler->addExtension('google', new GoogleExtension());
-		};
-	}
-
 }

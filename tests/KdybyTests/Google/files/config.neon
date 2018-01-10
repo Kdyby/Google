@@ -1,3 +1,9 @@
+extensions:
+	google: Kdyby\Google\DI\GoogleExtension
+
+application:
+	scanDirs: false
+
 google:
 	clientId: "93fc0e0480a89a6140e2"
 	clientSecret: "da40b6ff5902d57f44368934"
